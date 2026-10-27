@@ -508,34 +508,14 @@ its own uniquely named queue, so it never touches `orders`:
 
 ## 13. Reflection
 
-A message can be delivered more than once because RabbitMQ only removes a message after
-it receives an ACK, so if a worker finishes the business action but crashes before sending
-the ACK, the broker sees an unacknowledged delivery and redelivers it to another worker.
-This is the expected behavior of at-least-once delivery: the broker would rather deliver a
-message twice than risk losing it, and it cannot tell whether the crashed worker did the
-work. Idempotent handling makes that safe, because each worker checks the `event_id`
-against the shared processed-events table and skips the business action if the event was
-already completed, then ACKs the duplicate so it leaves the queue. In my crash demo,
-`evt-100` was processed by worker-1 and redelivered to worker-2, but the inventory was
-reserved exactly once.
+A message can be delivered more than once because RabbitMQ waits for a worker to send an ACK before removing it from the queue. If a worker crashes before sending the ACK, RabbitMQ sends the message to another worker, even if the first worker already processed it. To prevent duplicate processing, each worker checks the event_id to see if the order has already been handled and skips it if it has. In my demonstration, worker-1 processed evt-100 before crashing, but when worker-2 received the same message, it detected the duplicate and avoided processing the order again.
 
 ## 14. Limitations
 
-- This is a local demonstration, not a production deployment: a single RabbitMQ node, no
-  TLS, development credentials, and no dead-letter queue for rejected messages.
-- SQLite works here only because both workers run on the same machine and open the same
-  database file. Its file lock serializes their transactions.
-- A real distributed deployment, with workers on different hosts, would need shared
-  transactional storage (for example PostgreSQL with a unique constraint on `event_id`) or
-  another coordinated idempotency mechanism.
-- Acknowledging messages does not give global exactly-once business execution. RabbitMQ
-  provides at-least-once delivery, and exactly-once *effects* hold only when the side
-  effect and the dedup record commit atomically, as they do in this simulation.
+* Local testing only: This project is designed to run locally, so it uses one RabbitMQ server and basic development settings rather than a production setup.
 
-## Optional: screenshots
+* Shared database: Both workers use the same SQLite database to track processed messages. This works because they run on the same computer.
 
-The text logs in `evidence/` are the primary evidence. To add screenshots, open
-<http://localhost:15672>, go to **Queues and Streams**, then **orders**, and capture the
-*Consumers* section (two consumers with prefetch 1) while both workers run. During the
-manual crash procedure in Section 9, the *Unacked* count is 1 while worker-1 holds
-`evt-100` and returns to 0 after worker-2 ACKs it.
+* Larger systems: If the workers were running on different computers, they would need a shared database, such as PostgreSQL, to track duplicate messages.
+
+* Duplicate prevention: RabbitMQ can deliver the same message more than once, so ACKs alone do not prevent duplicate processing. Our system avoids this by checking the event_id and recording completed orders in the same database transaction.
