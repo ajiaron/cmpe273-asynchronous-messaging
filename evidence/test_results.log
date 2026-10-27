@@ -1,0 +1,61 @@
+Recorded: 2026-10-26T19:28:04-07:00
+Command: python -m pytest -v   (RabbitMQ running via docker compose)
+Exit code: 0
+
+============================= test session starts =============================
+platform win32 -- Python 3.13.14, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\aaron\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe
+rootdir: C:\Users\aaron\Desktop\cmpe273\cmpe273-module5
+configfile: pytest.ini
+testpaths: tests
+collecting ... collected 48 items
+
+tests/test_integration.py::test_published_message_is_durable_persistent_json PASSED [  2%]
+tests/test_integration.py::test_two_workers_compete_and_each_event_is_processed_once PASSED [  4%]
+tests/test_integration.py::test_unacked_message_is_redelivered_after_crash_and_survivor_continues PASSED [  6%]
+tests/test_integration.py::test_duplicate_publication_runs_business_action_once PASSED [  8%]
+tests/test_producer.py::test_order_contains_all_required_fields PASSED   [ 10%]
+tests/test_producer.py::test_new_event_ids_are_unique_uuids PASSED       [ 12%]
+tests/test_producer.py::test_generated_orders_have_readable_sequential_ids PASSED [ 14%]
+tests/test_producer.py::test_explicit_event_id_is_preserved PASSED       [ 16%]
+tests/test_producer.py::test_non_positive_quantity_is_rejected[0] PASSED [ 18%]
+tests/test_producer.py::test_non_positive_quantity_is_rejected[-1] PASSED [ 20%]
+tests/test_producer.py::test_non_positive_quantity_is_rejected[-50] PASSED [ 22%]
+tests/test_producer.py::test_non_integer_quantity_is_rejected[2] PASSED  [ 25%]
+tests/test_producer.py::test_non_integer_quantity_is_rejected[1.5] PASSED [ 27%]
+tests/test_producer.py::test_non_integer_quantity_is_rejected[None] PASSED [ 29%]
+tests/test_producer.py::test_non_integer_quantity_is_rejected[True] PASSED [ 31%]
+tests/test_producer.py::test_missing_field_is_rejected PASSED            [ 33%]
+tests/test_producer.py::test_empty_order_id_is_rejected PASSED           [ 35%]
+tests/test_producer.py::test_serialize_produces_utf8_json_with_all_fields PASSED [ 37%]
+tests/test_producer.py::test_serialize_then_parse_round_trip PASSED      [ 39%]
+tests/test_producer.py::test_parse_rejects_malformed_bodies[not json] PASSED [ 41%]
+tests/test_producer.py::test_parse_rejects_malformed_bodies[\xff\xfe] PASSED [ 43%]
+tests/test_producer.py::test_parse_rejects_malformed_bodies[[1, 2]] PASSED [ 45%]
+tests/test_producer.py::test_parse_rejects_malformed_bodies[{"event_id": "e", "order_id": "o", "item_id": "i", "quantity": 0}] PASSED [ 47%]
+tests/test_producer.py::test_publish_uses_persistent_json_message_on_orders_queue PASSED [ 50%]
+tests/test_producer.py::test_cli_single_order_with_repeat_keeps_same_event_id PASSED [ 52%]
+tests/test_producer.py::test_cli_rejects_invalid_quantity_without_publishing PASSED [ 54%]
+tests/test_producer.py::test_cli_count_generates_requested_number_of_orders PASSED [ 56%]
+tests/test_storage.py::test_new_event_is_processed PASSED                [ 58%]
+tests/test_storage.py::test_duplicate_event_is_detected_and_action_not_repeated PASSED [ 60%]
+tests/test_storage.py::test_different_events_for_same_item_accumulate PASSED [ 62%]
+tests/test_storage.py::test_records_persist_across_connections_and_reinitialization PASSED [ 64%]
+tests/test_storage.py::test_reset_storage_clears_all_tables PASSED       [ 66%]
+tests/test_storage.py::test_concurrent_connections_cannot_double_process PASSED [ 68%]
+tests/test_storage.py::test_transaction_holds_write_lock_so_second_connection_waits PASSED [ 70%]
+tests/test_worker.py::test_success_acks_only_after_processing_is_committed PASSED [ 72%]
+tests/test_worker.py::test_ack_is_not_sent_if_business_action_fails PASSED [ 75%]
+tests/test_worker.py::test_repeated_failure_on_redelivery_is_not_requeued_forever PASSED [ 77%]
+tests/test_worker.py::test_duplicate_delivery_is_acked_without_repeating_action PASSED [ 79%]
+tests/test_worker.py::test_duplicate_committed_by_other_worker_during_processing_is_skipped PASSED [ 81%]
+tests/test_worker.py::test_crash_before_ack_commits_but_never_acks PASSED [ 83%]
+tests/test_worker.py::test_crash_mode_only_targets_the_designated_event PASSED [ 85%]
+tests/test_worker.py::test_crash_mode_crashes_at_most_once PASSED        [ 87%]
+tests/test_worker.py::test_crash_mode_does_not_crash_on_a_duplicate PASSED [ 89%]
+tests/test_worker.py::test_malformed_message_is_rejected_without_requeue[{not json] PASSED [ 91%]
+tests/test_worker.py::test_malformed_message_is_rejected_without_requeue[{"order_id": "ORD-1"}] PASSED [ 93%]
+tests/test_worker.py::test_malformed_message_is_rejected_without_requeue[{"event_id": "e", "order_id": "o", "item_id": "i", "quantity": -1}] PASSED [ 95%]
+tests/test_worker.py::test_cli_rejects_crash_options_without_crash_mode PASSED [ 97%]
+tests/test_worker.py::test_cli_requires_worker_id PASSED                 [100%]
+
+============================= 48 passed in 6.81s ==============================

@@ -1,0 +1,28 @@
+# RabbitMQ broker for local development only.
+# AMQP: localhost:5672   Management UI: http://localhost:15672
+# Credentials cmpe273 / cmpe273 are local-development defaults, not secrets.
+# (The built-in "guest" user is restricted to loopback connections, which does
+# not include connections forwarded into a container, so a named user is used.)
+name: cmpe273-asynchronous-messaging
+
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: cmpe273-rabbitmq
+    hostname: cmpe273-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: cmpe273
+      RABBITMQ_DEFAULT_PASS: cmpe273
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+
+volumes:
+  rabbitmq-data:

@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local configuration
+.env
+
+# SQLite databases (orders.db, demo_orders.db) and WAL side files
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.log.tmp
+tmp/
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
